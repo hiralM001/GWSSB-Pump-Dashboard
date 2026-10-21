@@ -1,6 +1,6 @@
 # GWSSB Predictive Maintenance & SCADA Dashboard
 
-A condition-based monitoring and predictive maintenance web application built for the Gujarat Water Supply & Sewerage Board (GWSSB) rural water distribution network. This repository contains the cloud SCADA interface, telemetry simulator, bilingual operator assistant, and automated PDF audit generator.
+A condition-based monitoring and predictive maintenance web application built for the Gujarat Water Supply & Sewerage Board (GWSSB) rural water distribution network. This repository contains the cloud SCADA interface, telemetry analytics engine, bilingual operator assistant, and automated PDF audit generator.
 
 **Live Prototype:** [Insert Streamlit Cloud URL Here]
 
@@ -29,8 +29,6 @@ This system bridges low-cost IoT edge nodes (ESP32) with a centralized Streamlit
     ├── app.py                   # Main Streamlit SCADA application & NLP logic
     ├── requirements.txt         # Python package dependencies
     └── README.md                # Project documentation
-
-*(Note: `firebase_key.json` is intentionally omitted from version control via `.gitignore` to protect database credentials. See Section 6 for details.)*
 
 ---
 
@@ -65,18 +63,9 @@ The dashboard will open automatically at `http://localhost:8501`.
 
 ---
 
-## 6. Database Credentials & Simulation Mode
-
-Because this is a public repository, the Firebase service account key (`firebase_key.json`) is not included. 
-
-* **Default Behavior (Simulation Mode):** When `app.py` does not detect `firebase_key.json` in the root directory, it automatically initializes **Simulation Mode**. Synthetic telemetry streams are generated and locked per session state so that all analytical tabs, AI responses, and PDF downloads remain 100% functional for demonstration and evaluation.
-* **Enabling Live Hardware Sync:** Place your authorized `firebase_key.json` file in the root directory alongside `app.py` and restart the server. The sidebar indicator will switch from `Simulation Mode` to `LIVE Firebase Cloud Connected`.
-
----
-
-## 7. Field Rollout Roadmap
+## 6. Field Rollout Roadmap
 
 * **Phase 1 - Rural Pilot (Months 1-3):** Physical installation of ESP32 sensor nodes on select village pumps, Gram Panchayat telemetry sync, and threshold calibration.
 * **Phase 2 - Local Integration (Months 4-6):** Cloud linkage with Village Water & Sanitation Committees (VWSC) and GWSSB sub-divisions; field testing of the Gujarati operator interface.
 * **Phase 3 - Regional Scale-Up (Months 7-9):** Multi-district expansion, validation of RUL degradation models under seasonal load variations, and COI budget auditing.
-* **Phase 4 - Pan-Gujarat Rollout (Months 10-12):** State-wide deployment across rural pumping stations with automated SMS/WhatsApp fault ticketing to the Sarpanch and Deputy Executive Engineers.# GWSSB-Pump-Dashboard
+* **Phase 4 - Pan-Gujarat Rollout (Months 10-12):** State-wide deployment across rural pumping stations with automated SMS/WhatsApp fault ticketing to the Sarpanch and Deputy Executive Engineers.
