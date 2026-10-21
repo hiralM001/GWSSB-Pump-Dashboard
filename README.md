@@ -2,7 +2,7 @@
 
 A condition-based monitoring and predictive maintenance web application built for the Gujarat Water Supply & Sewerage Board (GWSSB) rural water distribution network. This repository contains the cloud SCADA interface, telemetry analytics engine, bilingual operator assistant, and automated PDF audit generator.
 
-**Live Prototype:** [Insert Streamlit Cloud URL Here]
+**Live Prototype:** https://gwssb-pump-dashboard-ltfxvygjic9pd9p9d4vxdf.streamlit.app/
 
 ---
 
