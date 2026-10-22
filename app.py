@@ -216,6 +216,55 @@ else:
       " preventive inspection due in 45 days."
   )
 
+# =========================================================
+# DYNAMIC SITUATION-BASED COST OF INACTION (COI) ENGINE
+# =========================================================
+if t_val > 80 or c_val > 25:
+  # Critical Thermal / Electrical Overload Situation
+  fix_today_cost = int(
+      4500 + max(0, t_val - 75) * 140 + max(0, c_val - 20) * 180
+  )
+  fix_today_desc = "Emergency Overload & Cooling Service"
+  pdf_fix_desc = "Overload/Cooling Fix"
+  ignore_cost = int(48000 + max(0, t_val - 75) * 900 + (v_val * 450))
+  ignore_desc = "Full Stator Rewinding & Overhaul"
+  pdf_ignore_desc = "Full Stator Rewinding"
+  fix_color = "#ECC94B"
+elif v_val > 10.0:
+  # High Vibration / Cavitation Mechanical Fault Situation
+  fix_today_cost = int(3200 + (v_val - 8.0) * 260)
+  fix_today_desc = "Bearing Kit & Shaft Alignment"
+  pdf_fix_desc = "Bearing & Alignment"
+  ignore_cost = int(34000 + (v_val - 8.0) * 1600 + max(0, t_val - 60) * 200)
+  ignore_desc = "Impeller & Mechanical Seal Failure"
+  pdf_ignore_desc = "Impeller/Shaft Damage"
+  fix_color = "#ECC94B"
+elif t_val > 70 or v_val > 7.0 or c_val > 20.0:
+  # Moderate Stress / Elevated Parameters Situation
+  fix_today_cost = int(
+      1800
+      + max(0, t_val - 65) * 55
+      + (v_val * 85)
+      + max(0, c_val - 15) * 60
+  )
+  fix_today_desc = "Minor Greasing & Contactor Service"
+  pdf_fix_desc = "Minor Greasing/Service"
+  ignore_cost = int(25000 + max(0, t_val - 65) * 550 + (v_val * 700))
+  ignore_desc = "Bearing Seizure & Winding Burnout"
+  pdf_ignore_desc = "Bearing/Winding Burn"
+  fix_color = "#48BB78"
+else:
+  # Optimal / Healthy Situation
+  fix_today_cost = int(600 + (v_val * 40))
+  fix_today_desc = "Routine Preventive Check Only"
+  pdf_fix_desc = "Routine Checkup"
+  ignore_cost = int(12000 + (t_val * 80) + (v_val * 300))
+  ignore_desc = "Unscheduled Wear & Tear Repair"
+  pdf_ignore_desc = "Long-Term Wear Repair"
+  fix_color = "#48BB78"
+
+net_savings = ignore_cost - fix_today_cost
+
 
 # --- ADVANCED CONTEXT-AWARE SMART NLP ENGINE ---
 def get_smart_ai_response(
@@ -368,14 +417,17 @@ def get_smart_ai_response(
   ):
     if lang == "English":
       return (
-          "💰 Financial Audit: Fixing this asset today costs ₹2,500 (minor"
-          " maintenance), whereas run-to-failure rewinding costs ₹45,000. Net"
-          " savings: ₹42,500."
+          f"💰 Financial Audit ({overall_condition}): Fixing `{node_id}` today"
+          f" costs ₹{fix_today_cost:,} ({fix_today_desc}), whereas"
+          f" run-to-failure costs ₹{ignore_cost:,} ({ignore_desc}). Net"
+          f" savings: ₹{net_savings:,}."
       )
     else:
       return (
-          "💰 નાણાકીય અહેવાલ: આજે ₹2,500 નો રિપેરિંગ ખર્ચ બચાવવાથી ભવિષ્યનો"
-          " ₹45,000 નો મોટર રીવાઈન્ડિંગ ખર્ચ બચી શકે છે. કુલ બચત: ₹42,500."
+          f"💰 નાણાકીય અહેવાલ ({overall_condition}): આજે ₹{fix_today_cost:,}"
+          f" ({fix_today_desc}) ખર્ચ કરવાથી ભવિષ્યનો ₹{ignore_cost:,}"
+          f" ({ignore_desc}) નો મોટો ખર્ચ બચી શકે છે. કુલ બચત:"
+          f" ₹{net_savings:,}."
       )
 
   elif any(
@@ -409,7 +461,7 @@ def get_smart_ai_response(
     if lang == "English":
       return (
           f"🤖 AI Assistant for `{node_id}`: Current health is {h}% with"
-          " {overall_condition}. Ask me about 'temperature', 'vibration',"
+          f" {overall_condition}. Ask me about 'temperature', 'vibration',"
           " 'current', 'cost', or 'health status'."
       )
     else:
@@ -783,10 +835,29 @@ def generate_official_pdf():
   )
 
   pdf.set_x(10)
-  pdf.set_font("Arial", "B", 9)
-  pdf.cell(63.3, 7, txt="Rs. 2,500 (Minor Bearing/Alignment)", border=1, align="C")
-  pdf.cell(63.3, 7, txt="Rs. 45,000 (Major Overhaul)", border=1, align="C")
-  pdf.cell(63.4, 7, txt="Rs. 42,500 Saved per Asset", border=1, ln=1, align="C")
+  pdf.set_font("Arial", "B", 8.5)
+  pdf.cell(
+      63.3,
+      7,
+      txt=f"Rs. {fix_today_cost:,} ({pdf_fix_desc})",
+      border=1,
+      align="C",
+  )
+  pdf.cell(
+      63.3,
+      7,
+      txt=f"Rs. {ignore_cost:,} ({pdf_ignore_desc})",
+      border=1,
+      align="C",
+  )
+  pdf.cell(
+      63.4,
+      7,
+      txt=f"Rs. {net_savings:,} Saved per Asset",
+      border=1,
+      ln=1,
+      align="C",
+  )
 
   pdf.ln(8)
 
@@ -986,11 +1057,11 @@ with alert_col:
 
 with finance_col:
   st.markdown(
-      """
+      f"""
     <div style='background-color: #1A1C23; padding: 15px; border-radius: 8px; border: 1px solid #D69E2E;'>
         <h4 style='color: #D69E2E; margin-top: 0px;'>Cost of Inaction (COI)</h4>
-        <p style='margin-bottom: 5px;'>If fixed today: <br><b style='color: #48BB78;'>₹2,500 (Minor Repair)</b></p>
-        <p style='margin-bottom: 0px;'>If ignored (Run-to-failure): <br><b style='color: #F56565;'>₹45,000 (Motor Rewinding)</b></p>
+        <p style='margin-bottom: 5px;'>If fixed today: <br><b style='color: {fix_color};'>₹{fix_today_cost:,} ({fix_today_desc})</b></p>
+        <p style='margin-bottom: 0px;'>If ignored (Run-to-failure): <br><b style='color: #F56565;'>₹{ignore_cost:,} ({ignore_desc})</b></p>
     </div>
     """,
       unsafe_allow_html=True,
@@ -999,7 +1070,11 @@ with finance_col:
 st.divider()
 
 tab1, tab2, tab3 = st.tabs(
-    ["📈 Telemetry Trends", "🔥 Virtual Thermal Map", "📉 RUL Prediction"]
+    [
+        "📈 Telemetry Trends",
+        "🔥 Virtual Thermal Map",
+        "📉 RUL Prediction (Degradation)",
+    ]
 )
 
 with tab1:
